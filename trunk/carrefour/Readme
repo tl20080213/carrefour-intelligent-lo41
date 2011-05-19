@@ -1,0 +1,4 @@
+Projet de carrefour intelligent pour LO41, semestre de Printemps 2011.
+Développé par Henri Maugendre et Alexis Vallet.
+Tourne sous Linux et Solaris.
+Pour compiler, faites make.

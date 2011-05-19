@@ -1,0 +1,74 @@
+Une petite liste de conventions à suivre pour notre code,
+de façon à ce qu'il soit plus lisible et mieux organisé, et
+éviter quelques bugs. Bien sur on pourra en rediscuter si tu veux
+faire différemment :).
+
+- J'ai installé un petit Makefile très simple pour la compilation,
+  pour compiler il suffit de taper make dans le répertoire du Makefile.
+  Si tu n'as pas make, sudo apt-get install make sous ubuntu.
+  Si tu veux rajouter un fichier à la compilation, tu dois dans le fichier
+  Makefile:
+   - rajouter nomDeFichier.o à OBJECTS (suffit de laisser un espace)
+   - rajouter une ligne:
+      nomDeFichier.o : nomDeFichier.h
+     en dessous de la ligne main.o : main.h
+     par exemple
+  Et c'est tout.
+
+- A chaque fichier A.c, faire correspondre un fichier A.h
+  (où A est le nom qu'on veut donner au "module" de code) qui
+  contient:
+   - les #includes et #define nécessaires au fichier A.c 
+   - les prototypes de chaque fonction définie dans le fichier A.c
+   - les définitions de structs, enums, typedefs et unions utilisées 
+     dans le fichier A.c
+  cela permet à chaque autre fichier B.c voulant utiliser les fonctions
+  de A.c là de le faire simplement en incluant simplement A.h, le reste
+  le makefile s'en occupe. Aussi, il suffit de faire #include "A.h" dans A.c
+  pour inclure tout ce qu'il faut.
+
+- Chaque fichier .c ou .h doit être de la forme suivante:
+
+  #ifndef _NOM_DU_FICHIER_C_OU_H_
+  #define _NOM_DU_FICHIER_C_OU_H_
+  
+  ... code du fichier ...
+
+  #endif
+
+  Cela permet d'éviter tous les problèmes d'include multiple, source
+  de bugs génants.
+
+- Commenter correctement, c'est à dire:
+  - Un commentaire au début de chaque fichier .h décrivant
+    ce que fait le fichier .c correspondant.
+  - Un commentaire au début de chaque fonction, décrivant ce que fait
+    la fonction, ses arguments, ses préconditions.
+  - Eviter les commentaires du style /* fonction main */ ou
+    /* code serveur */ ou /* code client */ qui délimitent des zones
+    dans un même fichier, mieux vaut créer un nouveau fichier pour
+    chaque bloc de code.
+
+- Avoir un style de code constant dans le code:
+  - On compile avec -Wall -Werror, ce qui signifie que les warnings ne seront
+    pas tolérés.
+  - Tous les noms de variables, fonctions, struct, enum, typedefs, unions, et fichiers
+    doivent être de la forme 'nomDeVariable', style Java.
+  - Tous les #define doivent être de la forme NOM_DE_CONSTANTE
+  - Indentation de taille 2 espaces, espaces plutôt que des tabs, ça permet
+    d'éviter les codes qui ont l'air bien dans un éditeur et pas dans l'autre.
+    (tu peux modifier ça facilement dans gedit dans Edit -> Preferences -> Editor)
+  - J'insiste pas trop dessus, mais ce serait bien de se mettre d'accord sur
+    comment on place nos accolades. Personnellement j'utilise généralement:
+    
+    int main() {	 /* accolade sur la même ligne */
+      if (condition) {   /* lorsque c'est un mot clé comme if ou for, laisser un espace avant
+	...                 la parenthèse ouvrante */
+      } else {           /* else sur la même ligne que l'accolade fermante */
+        doSomething();   /* lorsque c'est un appel de fonction, ne pas laisser d'espace */
+      }
+      return 0;
+    }
+
+    C'est vraiment un détail, mais ça rendrait le code plus lisible pour M. Deschamps :).
+    On pourra toujours utiliser le programme indent pour automatiser ça.
