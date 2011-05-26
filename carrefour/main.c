@@ -4,7 +4,6 @@
 #include "main.h"
 
 /*
-  Point d'entrée du programme, affiche "Hello, world!", ignore les arguments.
  */
 int main(int argc, char **argv) {
   printf("Hello, world!\n");

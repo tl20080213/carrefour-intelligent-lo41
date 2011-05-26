@@ -1,0 +1,6 @@
+#ifndef _GESTIONFEUX_H_
+#define _GESTIONFEUX_H_
+
+void gestionFeux(int[] fileRequetesBus, int memoireEtatFeu);
+
+#endif

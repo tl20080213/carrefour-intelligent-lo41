@@ -7,6 +7,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "gestionFeux.h"
+#include "gestionDirection.h"
+
 int main(int argc, char **argv);
 
 #endif
