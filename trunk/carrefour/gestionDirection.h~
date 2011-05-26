@@ -1,0 +1,10 @@
+#ifndef _GESTIONDIRECTION_H_
+#define _GESTIONDIRECTION_H_
+
+enum direction {NORD, SUD, EST, OUEST};
+
+void gestionDirection(const direction dir, const int *fileRequetesBus, 
+		      const int memoireEtatFeu,	const int nombreVoiesVoiture, 
+		      const int nombreVoiesBus);
+
+#endif

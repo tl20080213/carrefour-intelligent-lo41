@@ -1,0 +1,8 @@
+#ifndef _GESTIONFEUX_C_
+#define _GESTIONFEUX_C_
+
+void gestionFeux(const int[] filesRequetesBus, const int memoireEtatFeu) {
+  return;
+}
+
+#endif
