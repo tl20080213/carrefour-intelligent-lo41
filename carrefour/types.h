@@ -12,4 +12,6 @@ struct vehicule {
 typedef struct vehicule voiture;
 typedef struct vehicule bus;
 
+typedef enum feu {VERT_NORD_SUD, VERT_EST_OUEST} feu;
+
 #endif
