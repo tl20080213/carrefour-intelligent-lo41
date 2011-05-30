@@ -1,6 +1,8 @@
 #ifndef _GESTIONDIRECTION_H_
 #define _GESTIONDIRECTION_H_
 
+#include <stdlib.h>
+
 #include "types.h"
 
 /* Procédure de gestion d'une direction dir. Gère nombreVoiesVoiture

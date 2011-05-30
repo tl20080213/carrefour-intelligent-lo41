@@ -1,5 +1,5 @@
 OBJECTS = main.o gestionFeux.o gestionDirection.o
-CFLAGS = -Wall -Werror
+CFLAGS = -Wall -Werror -std=c89 -D_XOPEN_SOURCE=600 -ggdb
 
 carrefour : $(OBJECTS)
 	cc -o carrefour $(OBJECTS)
