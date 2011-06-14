@@ -49,14 +49,22 @@ void initialiserDirections(int fileRequetesBus, int memoireEtatFeux) {
   }
 }
 
+/* Initialise le sémaphore qui protège les accès à l'état des feux.
+   Cela pourra être un mutex. */
+int initialiserSemaphoreEtatFeux() {
+  return semget(IPC_PRIVATE, 1, IPC_CREAT|IPC_EXCL|0666);
+}
+
 /* Initialise les moyens de communications entre les processus
    et le processus eux-mêmes. */
 int main(int argc, char **argv) {
   int fileRequetesBus;
   int memoireEtatFeux;
+  int semaphoreEtatFeux;
   
   memoireEtatFeux = initialiserMemoireEtatFeux();
   fileRequetesBus = initialiserFileRequetesBus();
+  semaphoreEtatFeux = initialiserSemaphoreEtatFeux();
 
   if (fork() == 0) {
     initialiserDirections(fileRequetesBus, memoireEtatFeux);
@@ -65,6 +73,7 @@ int main(int argc, char **argv) {
     wait(NULL);
     msgctl(fileRequetesBus, IPC_RMID, NULL);
     shmctl(memoireEtatFeux, IPC_RMID, NULL);
+    semctl(semaphoreEtatFeux, 1, IPC_RMID);
   }
 
   return 0;
