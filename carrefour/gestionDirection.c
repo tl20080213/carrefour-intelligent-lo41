@@ -10,17 +10,19 @@
 /* La probabilité qu'un véhicule puisse sortir de sa voie de sortie. */
 #define PROBA_SORTIE_VEHICULE 0.5
 
-#define TAILLE_VOIE_ENTREE    20
-#define TAILLE_VOIE_SORTIE    20
+#define CAPACITE_VOIE_ENTREE  20
+#define CAPACITE_VOIE_SORTIE  20
 
 /* Gère la direction dir, avec nombreVoiesVoiture voies de voitures et nombreVoiesBus
    voies de bus. Les directions de la voie de voiture numero i est donnée dans
    tableDirections[i], et les direction de la voie de bus numero j est donnée dans
    tableDirections[nombreVoiesVoiture + j], où i et j commencent à zero. */
 void gestionDirection(const direction dir, const int *fileRequetesBus, 
-		      const int memoireEtatFeu,	const int nombreVoiesVoiture,
-		      const direction *tableDirections,
-		      const int nombreVoiesBus) {
+		      const int memoireEtatFeu,	const int semaphoreEtatFeux,
+		      const int nombreVoiesVoiture, const direction *tableDirections,
+		      const int nombreVoiesBus, const int memoireVoiesSortie,
+		      const int semaphoreVoiesSortie) {
+  
 }
 
 #endif

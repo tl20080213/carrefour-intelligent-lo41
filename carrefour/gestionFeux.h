@@ -6,6 +6,7 @@
    passage au vert des bus de la direction direction. memoireEtatFeu est
    l'identifiant d'une zone de mémoire partagée dans laquelle on indiquera
    les changements d'état des feux. */
-void gestionFeux(const int *filseRequetesBus, const int memoireEtatFeu);
+void gestionFeux(const int fileRequetesBus, const int memoireEtatFeu,
+		 const int semaphoreEtatFeux);
 
 #endif
