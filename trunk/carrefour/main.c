@@ -28,7 +28,8 @@ int initialiserFileRequetesBus() {
 }
 
 /* Lance les processus de gestion de chaque direction. */
-void initialiserDirections(int fileRequetesBus, int memoireEtatFeux) {
+void initialiserDirections(int fileRequetesBus, int memoireEtatFeux, int semaphoreEtatFeux,
+			   int memoireVoiesSortie, int semaphoreVoiesSortie) {
   const direction directionsSud[3] = {OUEST, NORD, EST};
   const direction directionsNord[3] = {EST|SUD, SUD, OUEST|SUD};
   const direction directionsOuest[3] = {EST, EST|SUD, EST|SUD};
@@ -36,13 +37,17 @@ void initialiserDirections(int fileRequetesBus, int memoireEtatFeux) {
   int i;
 
   if (fork() == 0) {
-    gestionDirection(SUD, NULL, memoireEtatFeux, 3, directionsSud, 0);
+    gestionDirection(SUD, NULL, memoireEtatFeux, semaphoreEtatFeux, 3, directionsSud, 0,
+		     memoireVoiesSortie, semaphoreVoiesSortie);
   } else if (fork() == 0) {
-    gestionDirection(NORD, NULL, memoireEtatFeux, 3, directionsNord, 0);
+    gestionDirection(NORD, NULL, memoireEtatFeux, semaphoreEtatFeux, 3, directionsNord, 0,
+		     memoireVoiesSortie, semaphoreVoiesSortie);
   } else if (fork() == 0) {
-    gestionDirection(OUEST, &fileRequetesBus, memoireEtatFeux, 2, directionsOuest, 1);
+    gestionDirection(OUEST, &fileRequetesBus, memoireEtatFeux, semaphoreEtatFeux, 2, 
+		     directionsOuest, 1, memoireVoiesSortie, semaphoreVoiesSortie);
   } else {
-    gestionDirection(EST, &fileRequetesBus, memoireEtatFeux, 2, directionsEst, 1);
+    gestionDirection(EST, &fileRequetesBus, memoireEtatFeux, semaphoreEtatFeux, 2, 
+		     directionsEst, 1, memoireVoiesSortie, semaphoreVoiesSortie);
     for (i = 1; i <= 3; i++) {
       wait(NULL);
     }
@@ -55,24 +60,49 @@ int initialiserSemaphoreEtatFeux() {
   return semget(IPC_PRIVATE, 1, IPC_CREAT|IPC_EXCL|0666);
 }
 
+int initialiserMemoireVoiesSortie() {
+  int identifiant;
+  voiesSortie *etat = NULL;
+
+  identifiant = shmget(IPC_PRIVATE, sizeof(voiesSortie), IPC_CREAT|IPC_EXCL|0666);
+  etat = shmat(identifiant, NULL, 0);
+  etat->nombreVehiculesOuest = 0;
+  etat->nombreVehiculesEst = 0;
+  etat->nombreVehiculesSud = 0;
+  etat->nombreVehiculesNord = 0;
+  shmdt(etat);
+
+  return identifiant;
+}
+
+int initialiserSemaphoreVoiesSortie() {
+  return semget(IPC_PRIVATE, 1, IPC_CREAT|IPC_EXCL|0666);
+}
+
 /* Initialise les moyens de communications entre les processus
    et le processus eux-mêmes. */
 int main(int argc, char **argv) {
   int fileRequetesBus;
   int memoireEtatFeux;
+  int memoireVoiesSortie;
   int semaphoreEtatFeux;
+  int semaphoreVoiesSortie;
   
   memoireEtatFeux = initialiserMemoireEtatFeux();
+  memoireVoiesSortie = initialiserMemoireVoiesSortie();
   fileRequetesBus = initialiserFileRequetesBus();
   semaphoreEtatFeux = initialiserSemaphoreEtatFeux();
+  semaphoreVoiesSortie = initialiserSemaphoreVoiesSortie();
 
   if (fork() == 0) {
-    initialiserDirections(fileRequetesBus, memoireEtatFeux);
+    initialiserDirections(fileRequetesBus, memoireEtatFeux, semaphoreEtatFeux, 
+			  memoireVoiesSortie, semaphoreVoiesSortie);
   } else {
-    gestionFeux(&fileRequetesBus, memoireEtatFeux);
+    gestionFeux(fileRequetesBus, memoireEtatFeux, semaphoreEtatFeux);
     wait(NULL);
     msgctl(fileRequetesBus, IPC_RMID, NULL);
     shmctl(memoireEtatFeux, IPC_RMID, NULL);
+    shmctl(memoireVoiesSortie, IPC_RMID, NULL);
     semctl(semaphoreEtatFeux, 1, IPC_RMID);
   }
 

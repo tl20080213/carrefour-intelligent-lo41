@@ -3,7 +3,8 @@
 
 #include "gestionFeux.h"
 
-void gestionFeux(const int *filesRequetesBus, const int memoireEtatFeu) {
+void gestionFeux(const int fileRequetesBus, const int memoireEtatFeu,
+		 const int semaphoreEtatFeux) {
   return;
 }
 

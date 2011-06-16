@@ -15,8 +15,9 @@
    + nombreVoiesBus tel que pour la voie numéro i, tableDirections[i]
    donne les directions possibles en sortant de cette voie. */
 void gestionDirection(const direction dir, const int *fileRequetesBus, 
-		      const int memoireEtatFeu,	const int nombreVoiesVoiture, 
-		      const direction *tableDirections,
-		      const int nombreVoiesBus);
+		      const int memoireEtatFeu,	const int semaphoreEtatFeux,
+		      const int nombreVoiesVoiture, const direction *tableDirections,
+		      const int nombreVoiesBus, const int memoireVoiesSortie,
+		      const int semaphoreVoiesSortie);
 
 #endif
