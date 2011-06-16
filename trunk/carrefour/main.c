@@ -98,12 +98,14 @@ int main(int argc, char **argv) {
     initialiserDirections(fileRequetesBus, memoireEtatFeux, semaphoreEtatFeux, 
 			  memoireVoiesSortie, semaphoreVoiesSortie);
   } else {
-    gestionFeux(fileRequetesBus, memoireEtatFeux, semaphoreEtatFeux);
+    gestionFeux(fileRequetesBus, memoireEtatFeux, semaphoreEtatFeux, 
+		memoireVoiesSortie, semaphoreVoiesSortie);
     wait(NULL);
     msgctl(fileRequetesBus, IPC_RMID, NULL);
     shmctl(memoireEtatFeux, IPC_RMID, NULL);
     shmctl(memoireVoiesSortie, IPC_RMID, NULL);
     semctl(semaphoreEtatFeux, 1, IPC_RMID);
+    semctl(semaphoreVoiesSortie, 1, IPC_RMID);
   }
 
   return 0;
