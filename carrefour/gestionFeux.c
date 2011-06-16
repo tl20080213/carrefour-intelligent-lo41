@@ -4,7 +4,8 @@
 #include "gestionFeux.h"
 
 void gestionFeux(const int fileRequetesBus, const int memoireEtatFeu,
-		 const int semaphoreEtatFeux) {
+		 const int semaphoreEtatFeux, const int memoireVoiesSortie,
+		 const int semaphoreVoiesSortie) {
   return;
 }
 

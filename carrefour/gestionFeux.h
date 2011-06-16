@@ -7,6 +7,7 @@
    l'identifiant d'une zone de mémoire partagée dans laquelle on indiquera
    les changements d'état des feux. */
 void gestionFeux(const int fileRequetesBus, const int memoireEtatFeu,
-		 const int semaphoreEtatFeux);
+		 const int semaphoreEtatFeux, const int memoireVoiesSortie,
+		 const int semaphoreVoiesSortie);
 
 #endif
