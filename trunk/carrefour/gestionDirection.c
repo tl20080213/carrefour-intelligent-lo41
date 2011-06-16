@@ -21,7 +21,6 @@ void gestionDirection(const direction dir, const int *fileRequetesBus,
 		      const int memoireEtatFeu,	const int nombreVoiesVoiture,
 		      const direction *tableDirections,
 		      const int nombreVoiesBus) {
-  
 }
 
 #endif
