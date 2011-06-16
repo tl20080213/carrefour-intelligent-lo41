@@ -11,7 +11,6 @@
 #define PROBA_SORTIE_VEHICULE 0.5
 
 #define CAPACITE_VOIE_ENTREE  20
-#define CAPACITE_VOIE_SORTIE  20
 
 /* Gère la direction dir, avec nombreVoiesVoiture voies de voitures et nombreVoiesBus
    voies de bus. Les directions de la voie de voiture numero i est donnée dans
