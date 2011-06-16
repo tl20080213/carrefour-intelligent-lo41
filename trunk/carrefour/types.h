@@ -23,4 +23,10 @@ typedef struct voiesSortie {
   int nombreVehiculesSud;
 } voiesSortie;
 
+
+typedef struct requeteBus {
+  long type;
+  direction contenantLeBus;
+} requeteBus;
+
 #endif
