@@ -1,4 +1,4 @@
-OBJECTS = main.o gestionFeux.o gestionDirection.o
+OBJECTS = main.o gestionFeux.o gestionDirection.o fileVehicules.o
 CFLAGS = -Wall -Werror -std=c89 -D_XOPEN_SOURCE=600 -ggdb
 
 carrefour : $(OBJECTS)
@@ -12,6 +12,9 @@ gestionFeux.o : gestionFeux.h
 
 gestionDirection.o : gestionDirection.h
 	cc -c gestionDirection.c $(CFLAGS)
+
+fileVehicules.o : fileVehicules.h
+	cc -c fileVehicules.c $(CFLAGS)
 
 .PHONY : clean
 clean : 

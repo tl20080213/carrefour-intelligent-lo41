@@ -4,10 +4,10 @@
 /* Une direction du carrefour */
 typedef enum direction {NORD = 1, SUD = 2, EST = 4, OUEST = 8} direction;
 
-struct vehicule {
+typedef struct vehicule {
   direction directionDepart;
   direction directionArrivee;
-};
+} vehicule;
 
 typedef struct vehicule voiture;
 typedef struct vehicule bus;
