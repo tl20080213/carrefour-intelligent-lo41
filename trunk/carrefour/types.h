@@ -14,6 +14,8 @@ typedef struct vehicule bus;
 
 typedef enum feu { VERT_NORD_SUD, VERT_EST_OUEST } feu;
 
+#define CAPACITE_VOIE_SORTIE 20
+
 typedef struct voiesSortie {
   int nombreVehiculesOuest;
   int nombreVehiculesEst;
