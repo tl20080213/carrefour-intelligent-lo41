@@ -8,6 +8,7 @@ void gestionFeux(const int fileRequetesBus, const int memoireEtatFeu,
 		 const int semaphoreVoiesSortie) {
 		 
   requeteBus requete;
+  requeteBus.type=42;
   feu *etat = NULL;
   etat = shmat(memoireEtatFeu, NULL, 0);
   
