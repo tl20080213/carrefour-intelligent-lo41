@@ -10,15 +10,15 @@
 /* Une file FIFO contenant des vehicules. */
 typedef struct fileVehicules {
   vehicule *vehicules;
-  size_t    capacite;
-  size_t    taille;
+  size_t capacite;
+  size_t taille;
 } fileVehicules;
 
 /* Retourne une file vide avec la capacite donnee en argument. */
 fileVehicules *fileVide(size_t capacite);
 
 /* Libere les ressources utilisees par la file passee en argument. */
-void freeFileVehicules(fileVehicules *file);
+void freeFileVehicules(fileVehicules * file);
 
 /* Donne la capacite de la file. */
 size_t capaciteFile(fileVehicules file);
@@ -34,7 +34,7 @@ int estPleine(fileVehicules file);
 
 /* Ajoute le vehicule aAjouter en queue de la file donnee en argument.
    Retourne faux si la file est pleine ou si l'argument file est NULL, vrai sinon. */
-int ajouterVehiculeQueue(fileVehicules *file, vehicule aAjouter);
+int ajouterVehiculeQueue(fileVehicules * file, vehicule aAjouter);
 
 /* Donne sans le retirer le vehicule en tete de la file. 
    Précondition: la file n'est pas vide. Si cette condition n'est pas valide, 
@@ -44,6 +44,6 @@ vehicule vehiculeTete(fileVehicules file);
 /* Donne et retire le vehicule en tete de la file. 
    Précondition: la file n'est pas vide ni NULL. Si cette condition n'est pas valide, 
                  la fonction donne un message d'erreur et lance exit(EXIT_FAILURE). */
-vehicule retirerVehiculeTete(fileVehicules *file);
+vehicule retirerVehiculeTete(fileVehicules * file);
 
 #endif
