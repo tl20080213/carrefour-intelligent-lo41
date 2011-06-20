@@ -15,9 +15,11 @@
 #define PROBA_ARRIVEE_BUS     0.25
 /* La probabilité qu'un véhicule puisse sortir de sa voie de sortie. */
 #define PROBA_SORTIE_VEHICULE 0.5
-
+/* La capacité des voies d'entrée. */
 #define CAPACITE_VOIE_ENTREE  20
 
+/* Retourne un nouveau véhicule avec la direction de départ et la
+   direction d'arrivée donnée en argument. */
 vehicule nouveauVehicule(direction directionDepart,
 			 direction directionArrivee) {
   vehicule resultat;
@@ -28,6 +30,7 @@ vehicule nouveauVehicule(direction directionDepart,
   return resultat;
 }
 
+/* Initialise les voies d'entrée à vide. */
 fileVehicules **initialiserVoiesEntree(const int nombreDeVoies) {
   int i;
   fileVehicules **voiesEntree = NULL;
@@ -46,6 +49,7 @@ fileVehicules **initialiserVoiesEntree(const int nombreDeVoies) {
   return voiesEntree;
 }
 
+/* Libère les ressources allouées au voies d'entrée. */
 void libererVoiesEntree(fileVehicules ** voiesEntree, int nombreDeVoies) {
   int i;
 
@@ -55,10 +59,25 @@ void libererVoiesEntree(fileVehicules ** voiesEntree, int nombreDeVoies) {
   free(voiesEntree);
 }
 
+/* Retourne l'état du feu contenu dans la mémoire memoire et en protégeant la lecture par
+   le sémaphore semaphore. */
 feu lireEtatFeux(int memoire, int semaphore) {
-  return VERT_NORD_SUD;
+  feu *etat = NULL;
+  feu resultat;
+
+  etat = shmat(memoire, NULL, 0);
+
+  P(semaphore);
+  resultat = *etat;
+  V(semaphore);
+
+  shmdt(etat);
+
+  return resultat;
 }
 
+/* Attend le passage au vert du feu dans la direction dir, avec son état contenu 
+   dans memoireEtatFeux et protégé par semaphoreEtatFeux. */
 void attendrePassageAuVert(direction dir, int memoireEtatFeux,
 			   int semaphoreEtatFeux) {
   int vert = 0;
@@ -74,6 +93,13 @@ void attendrePassageAuVert(direction dir, int memoireEtatFeux,
     sleep(1000);
     vert = lireEtatFeux(memoireEtatFeux, semaphoreEtatFeux) == etatAttendu;
   }
+}
+
+/* TODO */
+void ajouterVehicules(const direction * tableDirections,
+		      int nombreVoiesVoiture, int nombreVoiesBus,
+		      fileVehicules ** voiesEntree) {
+  return;
 }
 
 /* Gère la direction dir, avec nombreVoiesVoiture voies de voitures et nombreVoiesBus
@@ -93,6 +119,8 @@ void gestionDirection(const direction dir, const int *fileRequetesBus,
       initialiserVoiesEntree(nombreVoiesVoiture + nombreVoiesBus);
 
   while (1) {
+    ajouterVehicules(tableDirections, nombreVoiesVoiture, nombreVoiesBus,
+		     voiesEntree);
     attendrePassageAuVert(dir, memoireEtatFeu, semaphoreEtatFeux);
   }
 
