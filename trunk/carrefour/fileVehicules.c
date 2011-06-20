@@ -8,12 +8,14 @@ fileVehicules *fileVide(size_t capacite) {
 
   resultat = malloc(sizeof(fileVehicules));
   if (resultat == NULL) {
-    fprintf(stderr, "fileVehicules.c : fileVide : malloc : erreur d'allocation.");
+    fprintf(stderr,
+	    "fileVehicules.c : fileVide : malloc : erreur d'allocation.");
     exit(EXIT_FAILURE);
   }
   resultat->vehicules = malloc(capacite * sizeof(vehicule));
   if (resultat->vehicules == NULL) {
-    fprintf(stderr, "fileVehicules.c : fileVide : malloc : erreur d'allocation.");
+    fprintf(stderr,
+	    "fileVehicules.c : fileVide : malloc : erreur d'allocation.");
     exit(EXIT_FAILURE);
   }
   resultat->capacite = capacite;
@@ -22,7 +24,7 @@ fileVehicules *fileVide(size_t capacite) {
   return resultat;
 }
 
-void freeFileVehicules(fileVehicules *file) {
+void freeFileVehicules(fileVehicules * file) {
   free(file->vehicules);
   free(file);
 }
@@ -43,7 +45,7 @@ int estPleine(fileVehicules file) {
   return tailleFile(file) == capaciteFile(file);
 }
 
-static void decalerFileADroite(fileVehicules *file) {
+static void decalerFileADroite(fileVehicules * file) {
   int i = 0;
 
   file->taille++;
@@ -52,7 +54,7 @@ static void decalerFileADroite(fileVehicules *file) {
   }
 }
 
-int ajouterVehiculeQueue(fileVehicules *file, vehicule aAjouter) {
+int ajouterVehiculeQueue(fileVehicules * file, vehicule aAjouter) {
   if (file == NULL || estPleine(*file)) {
     return 0;
   } else {
@@ -64,18 +66,20 @@ int ajouterVehiculeQueue(fileVehicules *file, vehicule aAjouter) {
 
 vehicule vehiculeTete(fileVehicules file) {
   if (estVide(file)) {
-    fprintf(stderr, "fileVehicules.c : vehiculeTete : la file en argument est vide.\n");
+    fprintf(stderr,
+	    "fileVehicules.c : vehiculeTete : la file en argument est vide.\n");
     exit(EXIT_FAILURE);
   } else {
     return file.vehicules[tailleFile(file) - 1];
   }
 }
 
-vehicule retirervehiculeTete(fileVehicules *file) {
+vehicule retirervehiculeTete(fileVehicules * file) {
   vehicule resultat;
 
   if (file == NULL) {
-    fprintf(stderr, "fileVehicules.c : retirerVehiculeTete : la file en argument est NULL.\n");
+    fprintf(stderr,
+	    "fileVehicules.c : retirerVehiculeTete : la file en argument est NULL.\n");
     exit(EXIT_FAILURE);
   } else {
     resultat = vehiculeTete(*file);

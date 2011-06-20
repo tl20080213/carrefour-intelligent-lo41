@@ -13,6 +13,7 @@
 #include <sys/sem.h>
 #include <unistd.h>
 
+#include "semaphore.h"
 #include "gestionFeux.h"
 #include "gestionDirection.h"
 
