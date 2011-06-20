@@ -8,45 +8,77 @@ void gestionFeux(const int fileRequetesBus, const int memoireEtatFeu, const int 
 		 
   requeteBus requete;
   requete.type=42;
-  feu *etat = NULL;
-  etat = shmat(memoireEtatFeu, NULL, 0);
-  clock_t tempsDebut;
+  
+  feu *etatFeu = NULL;
+  etatFeu = shmat(memoireEtatFeu, NULL, 0);
+  
+  voiesSortie *etatVoiesSortie = NULL;
+  etatVoiesSortie = shmat(memoireVoiesSortie, NULL, 0);
+  
+  
+  /*int modulo;
+  
+  struct timespec tempsDebut;
+  clock_gettime(CLOCK_REALTIME,&tempsDebut);*/
   
   while (1) {
-     tempsDebut=clock();
-    
     while(msgrcv(fileRequetesBus, &requete, 5, requete.type, IPC_NOWAIT)==-1) {
-      if(((clock()-tempsDebut)/CLOCKS_PER_SEC)%7==0) {
-        if(*etat==VERT_EST_OUEST) {
-          *etat=VERT_NORD_SUD;
+      
+      /*struct timespec tempsFin;
+      clock_gettime(CLOCK_REALTIME,&tempsFin);
+      
+      modulo=tempsFin.tv_sec-tempsDebut.tv_sec;
+      printf("temps = %f sec \n", temps);
+      printf("tempsDebut = %f sec \n", tempsDebut);
+      printf("tempsFin = %f sec \n", tempsFin);
+      printf("modulo =  %d \n", modulo);*/
+      if(0) {
+        P(semaphoreEtatFeux);
+        if(*etatFeu==VERT_EST_OUEST) {
+          *etatFeu=VERT_NORD_SUD;
+          printf("FEU NORD SUD");
         }
-        else if(*etat==VERT_NORD_SUD) {
-          *etat=VERT_EST_OUEST;
+        else if(*etatFeu==VERT_NORD_SUD) {
+          *etatFeu=VERT_EST_OUEST;
+          printf("FEU EST OUEST");
         }
+        P(semaphoreVoiesSortie);
+        etatVoiesSortie->nombreVehiculesOuest = 0;
+        etatVoiesSortie->nombreVehiculesEst = 0;
+        etatVoiesSortie->nombreVehiculesSud = 0;
+        etatVoiesSortie->nombreVehiculesNord = 0;
+        V(semaphoreVoiesSortie);
+        V(semaphoreEtatFeux);
       }
     }
-    
+    P(semaphoreEtatFeux);
     if(requete.contenantLeBus==1) {
-      if(*etat==VERT_EST_OUEST) {
-       *etat=VERT_NORD_SUD;
+      if(*etatFeu==VERT_EST_OUEST) {
+       *etatFeu=VERT_NORD_SUD;
       }
     }
     else if(requete.contenantLeBus==2) {
-      if(*etat==VERT_EST_OUEST) {
-        *etat=VERT_NORD_SUD;
+      if(*etatFeu==VERT_EST_OUEST) {
+        *etatFeu=VERT_NORD_SUD;
       }
     }
     else if(requete.contenantLeBus==4) {
-      if(*etat==VERT_NORD_SUD) {
-        *etat=VERT_EST_OUEST;
+      if(*etatFeu==VERT_NORD_SUD) {
+        *etatFeu=VERT_EST_OUEST;
       }
     }
     else if(requete.contenantLeBus==8) {
-      if(*etat==VERT_NORD_SUD) {
-        *etat=VERT_EST_OUEST;
+      if(*etatFeu==VERT_NORD_SUD) {
+        *etatFeu=VERT_EST_OUEST;
       }
     }
-    
+    P(semaphoreVoiesSortie);
+    etatVoiesSortie->nombreVehiculesOuest = 0;
+    etatVoiesSortie->nombreVehiculesEst = 0;
+    etatVoiesSortie->nombreVehiculesSud = 0;
+    etatVoiesSortie->nombreVehiculesNord = 0;
+    V(semaphoreVoiesSortie);
+    V(semaphoreEtatFeux);
   }
 		 
   return;
