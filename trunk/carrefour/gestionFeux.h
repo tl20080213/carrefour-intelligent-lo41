@@ -11,6 +11,7 @@
 #include <unistd.h>
 #include "types.h"
 #include <time.h>
+#include "semaphore.h"
 
 /* Procédure de gestion des feux du carrefour. filesRequetesBus[direction] 
    est l'identifiant d'une file de messages contenant les demandes de 
