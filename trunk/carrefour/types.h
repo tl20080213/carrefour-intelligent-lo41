@@ -25,7 +25,7 @@ typedef struct voiesSortie {
 
 
 typedef struct requeteBus {
-  long type;
+  long type=42;
   direction contenantLeBus;
 } requeteBus;
 
