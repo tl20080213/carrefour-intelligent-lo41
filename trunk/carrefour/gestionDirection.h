@@ -4,9 +4,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <sys/shm.h>
 
 #include "types.h"
 #include "fileVehicules.h"
+#include "semaphore.h"
 
 /* Procédure de gestion d'une direction dir. Gère nombreVoiesVoiture
    voies de voitures et nombreVoiesBus voies de bus. 
