@@ -22,7 +22,7 @@ semaphore.o : semaphore.h
 
 .PHONY : clean
 clean : 
-	rm carrefour $(OBJECTS) *.gch
+	rm carrefour $(OBJECTS) *.gch && ./ipc_nettoyage
 
 .PHONY : indent
 indent:

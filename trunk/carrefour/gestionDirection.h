@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <sys/shm.h>
+#include <time.h>
 
 #include "types.h"
 #include "fileVehicules.h"

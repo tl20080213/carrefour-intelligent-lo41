@@ -79,7 +79,7 @@ feu lireEtatFeux(int memoire, int semaphore) {
 /* Attend le passage au vert du feu dans la direction dir, avec son état contenu 
    dans memoireEtatFeux et protégé par semaphoreEtatFeux. */
 void attendrePassageAuVert(direction dir, int memoireEtatFeux,
-			   int semaphoreEtatFeux) {
+			   int semaphoreEtatFeux, int semaphoreChangementFeux) {
   int vert = 0;
   feu etatAttendu;
 
@@ -90,17 +90,78 @@ void attendrePassageAuVert(direction dir, int memoireEtatFeux,
   }
 
   while (!vert) {
-    sleep(1000);
+    P(semaphoreChangementFeux);
     vert = lireEtatFeux(memoireEtatFeux, semaphoreEtatFeux) == etatAttendu;
   }
 }
 
-/* TODO */
-void ajouterVehicules(const direction * tableDirections,
-		      int nombreVoiesVoiture, int nombreVoiesBus,
-		      fileVehicules ** voiesEntree) {
-  return;
+/* Retourne une direction aléatoire parmi les directions en paramètre. */
+direction directionAleatoire(direction dir) {
+  int exponent = 1;
+  int resultat = 0;
+
+  while (dir / exponent != 1) {
+    dir = dir /exponent;
+  }
+
+  while ((resultat | dir) != dir) {
+    resultat = 1 + rand() % exponent;
+  }
+
+  return resultat;
 }
+
+/* Ajoute aléatoirement des véhicules dans les voies. */
+void ajouterVehicules(const direction dir, 
+		      const direction *tableDirections,
+		      int nombreVoiesVoiture, int nombreVoiesBus,
+		      fileVehicules **voiesEntree,
+		      int fileRequetesBus) {
+  int i;
+
+  for (i = 0; i < NOMBRE_ARRIVEE_VOITURE_MAX; i++) {
+    if (drand48() <= PROBA_ARRIVEE_VOITURE) {
+      int voie = rand() % nombreVoiesVoiture;
+      direction directionSortie = directionAleatoire(tableDirections[voie]);
+      if (!estPleine(*voiesEntree[voie])) {
+	ajouterVehiculeQueue(voiesEntree[voie], nouveauVehicule(dir, 
+								directionSortie));
+      }
+    }
+  }
+
+  for (i = 0; i < NOMBRE_ARRIVEE_BUS_MAX; i++) {
+    if (drand48() <= PROBA_ARRIVEE_BUS) {
+      int voie = rand() % nombreVoiesBus + nombreVoiesVoiture;
+      direction directionSortie = directionAleatoire(tableDirections[voie]);
+      if (!estPleine(*voiesEntree[voie])) {
+	ajouterVehiculeQueue(voiesEntree[voie], nouveauVehicule(dir, 
+								directionSortie));
+      }
+    }
+  }
+}
+
+void envoyerRequeteBus(direction dir, fileVehicules **voiesEntree,
+		       int nombreVoiesVoiture, int nombreVoiesBus, int* fileRequetesBus) {
+  int sontVides = 1;
+  requeteBus requete;
+
+  if (fileRequetesBus == NULL) {
+    return;
+  }
+
+  for (int i = nombreVoiesVoiture; i < nombreVoiesVoiture + nombreVoiesBus; i++) {
+    sontVides = sontVides && estVide(*voiesEntree[i]);
+  }
+
+  if (!sontVides) {
+    requete.type = 42;
+    requete.direction = dir;
+  }
+  
+}
+		       
 
 /* Gère la direction dir, avec nombreVoiesVoiture voies de voitures et nombreVoiesBus
    voies de bus. Les directions de la voie de voiture numero i est donnée dans
@@ -119,10 +180,14 @@ void gestionDirection(const direction dir, const int *fileRequetesBus,
   fileVehicules **voiesEntree =
       initialiserVoiesEntree(nombreVoiesVoiture + nombreVoiesBus);
 
+  srand(time(NULL));
+  srand48(time(NULL));
+
   while (1) {
-    ajouterVehicules(tableDirections, nombreVoiesVoiture, nombreVoiesBus,
+    ajouterVehicules(dir, tableDirections, nombreVoiesVoiture, nombreVoiesBus,
 		     voiesEntree);
-    attendrePassageAuVert(dir, memoireEtatFeu, semaphoreEtatFeux);
+    envoyerRequeteBus(dir, voiesEntree, nombreVoiesVoiture, nombreVoiesBus, fileRequetesBus);
+    attendrePassageAuVert(dir, memoireEtatFeu, semaphoreEtatFeux, semaphoreChangementFeux);
   }
 
   libererVoiesEntree(voiesEntree, nombreVoiesVoiture + nombreVoiesBus);

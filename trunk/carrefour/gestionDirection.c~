@@ -70,7 +70,7 @@ feu lireEtatFeux(int memoire, int semaphore) {
   P(semaphore);
   resultat = *etat;
   V(semaphore);
-  
+
   shmdt(etat);
 
   return resultat;
@@ -79,7 +79,7 @@ feu lireEtatFeux(int memoire, int semaphore) {
 /* Attend le passage au vert du feu dans la direction dir, avec son état contenu 
    dans memoireEtatFeux et protégé par semaphoreEtatFeux. */
 void attendrePassageAuVert(direction dir, int memoireEtatFeux,
-			   int semaphoreEtatFeux) {
+			   int semaphoreEtatFeux, int semaphoreChangementFeux) {
   int vert = 0;
   feu etatAttendu;
 
@@ -90,13 +90,15 @@ void attendrePassageAuVert(direction dir, int memoireEtatFeux,
   }
 
   while (!vert) {
-    sleep(1000);
+    V(semaphoreChangementFeux);
     vert = lireEtatFeux(memoireEtatFeux, semaphoreEtatFeux) == etatAttendu;
   }
 }
+
 /* TODO */
-void ajouterVehicules(const direction *tableDirections, int nombreVoiesVoiture, int nombreVoiesBus,
-		      fileVehicules **voiesEntree) {
+void ajouterVehicules(const direction * tableDirections,
+		      int nombreVoiesVoiture, int nombreVoiesBus,
+		      fileVehicules ** voiesEntree) {
   return;
 }
 
@@ -112,13 +114,15 @@ void gestionDirection(const direction dir, const int *fileRequetesBus,
 		      const direction * tableDirections,
 		      const int nombreVoiesBus,
 		      const int memoireVoiesSortie,
-		      const int semaphoreVoiesSortie) {
+		      const int semaphoreVoiesSortie,
+		      const int semaphoreChangementFeux) {
   fileVehicules **voiesEntree =
       initialiserVoiesEntree(nombreVoiesVoiture + nombreVoiesBus);
 
   while (1) {
-    ajouterVehicules(tableDirections, nombreVoiesVoiture, nombreVoiesBus, voiesEntree);
-    attendrePassageAuVert(dir, memoireEtatFeu, semaphoreEtatFeux);
+    ajouterVehicules(tableDirections, nombreVoiesVoiture, nombreVoiesBus,
+		     voiesEntree);
+    attendrePassageAuVert(dir, memoireEtatFeu, semaphoreEtatFeux, semaphoreChangementFeux);
   }
 
   libererVoiesEntree(voiesEntree, nombreVoiesVoiture + nombreVoiesBus);

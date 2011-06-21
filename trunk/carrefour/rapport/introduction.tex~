@@ -1,0 +1,13 @@
+Welcome to the Emacs shell
+
+~/Documents/utbm/LO41/carrefour-intelligent-lo41/carrefour/rapport $ touch introduction.tex
+~/Documents/utbm/LO41/carrefour-intelligent-lo41/carrefour/rapport $ touch structures.tes
+~/Documents/utbm/LO41/carrefour-intelligent-lo41/carrefour/rapport $ mv structures.tes structures.tex
+~/Documents/utbm/LO41/carrefour-intelligent-lo41/carrefour/rapport $ touch communication.tex
+~/Documents/utbm/LO41/carrefour-intelligent-lo41/carrefour/rapport $ touch protection.tex
+~/Documents/utbm/LO41/carrefour-intelligent-lo41/carrefour/rapport $ touch fonctionnement.tex
+~/Documents/utbm/LO41/carrefour-intelligent-lo41/carrefour/rapport $ touch conclusion.tex
+~/Documents/utbm/LO41/carrefour-intelligent-lo41/carrefour/rapport $ ls
+communication.tex  fonctionnement.tex  introduction.tex~  rapport.tex   structures.tex
+conclusion.tex     introduction.tex    protection.tex     rapport.tex~  
+~/Documents/utbm/LO41/carrefour-intelligent-lo41/carrefour/rapport $ 
