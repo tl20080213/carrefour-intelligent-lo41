@@ -20,6 +20,6 @@
    les changements d'état des feux. */
 void gestionFeux(const int fileRequetesBus, const int memoireEtatFeu,
 		 int semaphoreEtatFeux, const int memoireVoiesSortie,
-		 int semaphoreVoiesSortie);
+		 int semaphoreVoiesSortie, int semaphoreChangementFeux);
 
 #endif

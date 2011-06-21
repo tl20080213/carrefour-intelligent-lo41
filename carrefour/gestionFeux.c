@@ -4,7 +4,7 @@
 
 #include "gestionFeux.h"
 
-void gestionFeux(const int fileRequetesBus, const int memoireEtatFeu, int semaphoreEtatFeux, const int memoireVoiesSortie, int semaphoreVoiesSortie) {
+void gestionFeux(const int fileRequetesBus, const int memoireEtatFeu, int semaphoreEtatFeux, const int memoireVoiesSortie, int semaphoreVoiesSortie, int semaphoreChangementFeux) {
 		 
   requeteBus requete;
   requete.type=42;

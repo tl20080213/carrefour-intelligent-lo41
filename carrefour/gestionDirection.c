@@ -114,7 +114,8 @@ void gestionDirection(const direction dir, const int *fileRequetesBus,
 		      const direction * tableDirections,
 		      const int nombreVoiesBus,
 		      const int memoireVoiesSortie,
-		      const int semaphoreVoiesSortie) {
+		      const int semaphoreVoiesSortie,
+		      const int semaphoreChangementFeux) {
   fileVehicules **voiesEntree =
       initialiserVoiesEntree(nombreVoiesVoiture + nombreVoiesBus);
 

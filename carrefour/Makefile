@@ -1,8 +1,9 @@
 OBJECTS = main.o gestionFeux.o gestionDirection.o fileVehicules.o semaphore.o
 CFLAGS = -Wall -Werror -std=c89 -D_XOPEN_SOURCE=600 -ggdb
+LDFLAGS = -lrt
 
 carrefour : $(OBJECTS)
-	cc -o carrefour $(OBJECTS)
+	cc -o carrefour $(LDFLAGS) $(OBJECTS)
 
 main.o : main.h
 	cc -c main.c $(CFLAGS)
