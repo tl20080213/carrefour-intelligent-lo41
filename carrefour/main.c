@@ -81,8 +81,9 @@ static int initialiserMemoireVoiesSortie() {
   return identifiant;
 }
 
-static void initialiserSemaphores(char *argv0, int *sem1, int *sem2, int *sem3) {
-  int init[] = {1, 1, 0};
+static void initialiserSemaphores(char *argv0, int *sem1, int *sem2,
+				  int *sem3) {
+  int init[] = { 1, 1, 0 };
 
   initSem(3, argv0, init);
   *sem1 = 0;
@@ -104,14 +105,12 @@ int main(int argc, char **argv) {
   memoireVoiesSortie = initialiserMemoireVoiesSortie();
   fileRequetesBus = initialiserFileRequetesBus();
   initialiserSemaphores(argv[0], &semaphoreEtatFeux,
-			&semaphoreVoiesSortie,
-			&semaphoreChangementFeux);
+			&semaphoreVoiesSortie, &semaphoreChangementFeux);
 
   if (fork() == 0) {
     initialiserDirections(fileRequetesBus, memoireEtatFeux,
 			  semaphoreEtatFeux, memoireVoiesSortie,
-			  semaphoreVoiesSortie, 
-			  semaphoreChangementFeux);
+			  semaphoreVoiesSortie, semaphoreChangementFeux);
   } else {
     gestionFeux(fileRequetesBus, memoireEtatFeux, semaphoreEtatFeux,
 		memoireVoiesSortie, semaphoreVoiesSortie,
