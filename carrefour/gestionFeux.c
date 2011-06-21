@@ -4,7 +4,7 @@
 
 #include "gestionFeux.h"
 
-void gestionFeux(const int fileRequetesBus, const int memoireEtatFeu, const int semaphoreEtatFeux, const int memoireVoiesSortie, const int semaphoreVoiesSortie) {
+void gestionFeux(const int fileRequetesBus, const int memoireEtatFeu, int semaphoreEtatFeux, const int memoireVoiesSortie, int semaphoreVoiesSortie) {
 		 
   requeteBus requete;
   requete.type=42;
@@ -15,66 +15,73 @@ void gestionFeux(const int fileRequetesBus, const int memoireEtatFeu, const int 
   voiesSortie *etatVoiesSortie = NULL;
   etatVoiesSortie = shmat(memoireVoiesSortie, NULL, 0);
   
-  
-  /*int modulo;
+  int ok;
+  ok=0;
+  int modulo;
   
   struct timespec tempsDebut;
-  clock_gettime(CLOCK_REALTIME,&tempsDebut);*/
+  clock_gettime(CLOCK_REALTIME,&tempsDebut);
   
   while (1) {
     while(msgrcv(fileRequetesBus, &requete, 5, requete.type, IPC_NOWAIT)==-1) {
-      
-      /*struct timespec tempsFin;
+      struct timespec tempsFin;
       clock_gettime(CLOCK_REALTIME,&tempsFin);
       
-      modulo=tempsFin.tv_sec-tempsDebut.tv_sec;
-      printf("temps = %f sec \n", temps);
-      printf("tempsDebut = %f sec \n", tempsDebut);
-      printf("tempsFin = %f sec \n", tempsFin);
-      printf("modulo =  %d \n", modulo);*/
-      if(0) {
-        P(semaphoreEtatFeux);
-        if(*etatFeu==VERT_EST_OUEST) {
-          *etatFeu=VERT_NORD_SUD;
-          printf("Vert au FEU NORD SUD");
+      modulo=(int) (tempsFin.tv_sec-tempsDebut.tv_sec);
+      modulo=modulo%7;
+     
+      if(modulo==6) {
+        ok=1;
+      }
+      if(modulo==0) {
+        if(ok==1) {
+            ok=0;
+            printf("AVANT semaphore SemaphoreEtatFeu = %d \n",semaphoreEtatFeux);
+            P(semaphoreEtatFeux);
+            printf("APRES semaphore SemaphoreEtatFeu = %d \n",semaphoreEtatFeux);
+            if(*etatFeu==VERT_EST_OUEST) {
+              *etatFeu=VERT_NORD_SUD;
+              printf("Vert au FEU NORD SUD\n");
+            }
+            else if(*etatFeu==VERT_NORD_SUD) {
+              *etatFeu=VERT_EST_OUEST;
+              printf("Vert au FEU EST OUEST\n");
+            }
+            P(semaphoreVoiesSortie);
+            etatVoiesSortie->nombreVehiculesOuest = 0;
+            etatVoiesSortie->nombreVehiculesEst = 0;
+            etatVoiesSortie->nombreVehiculesSud = 0;
+            etatVoiesSortie->nombreVehiculesNord = 0;
+            printf("Capacités sortie mises à 0\n");
+            V(semaphoreVoiesSortie);
+            V(semaphoreEtatFeux);
         }
-        else if(*etatFeu==VERT_NORD_SUD) {
-          *etatFeu=VERT_EST_OUEST;
-          printf("Vert au FEU EST OUEST");
-        }
-        P(semaphoreVoiesSortie);
-        etatVoiesSortie->nombreVehiculesOuest = 0;
-        etatVoiesSortie->nombreVehiculesEst = 0;
-        etatVoiesSortie->nombreVehiculesSud = 0;
-        etatVoiesSortie->nombreVehiculesNord = 0;
-        printf("Capacités sortie mises à 0");
-        V(semaphoreVoiesSortie);
-        V(semaphoreEtatFeux);
       }
     }
+    printf("Demande d'un bus\n");
     P(semaphoreEtatFeux);
     if(requete.contenantLeBus==1) {
       if(*etatFeu==VERT_EST_OUEST) {
        *etatFeu=VERT_NORD_SUD;
-       printf("Changement Feu VERT_NORD_SUD suite à une demande de bus");
+       printf("Changement Feu VERT_NORD_SUD suite à une demande de bus\n");
       }
     }
     else if(requete.contenantLeBus==2) {
       if(*etatFeu==VERT_EST_OUEST) {
         *etatFeu=VERT_NORD_SUD;
-        printf("Changement Feu VERT_NORD_SUD suite à une demande de bus");
+        printf("Changement Feu VERT_NORD_SUD suite à une demande de bus\n");
       }
     }
     else if(requete.contenantLeBus==4) {
       if(*etatFeu==VERT_NORD_SUD) {
         *etatFeu=VERT_EST_OUEST;
-        printf("Changement Feu VERT_EST_OUEST suite à une demande de bus");
+        printf("Changement Feu VERT_EST_OUEST suite à une demande de bus\n");
       }
     }
     else if(requete.contenantLeBus==8) {
       if(*etatFeu==VERT_NORD_SUD) {
         *etatFeu=VERT_EST_OUEST;
-        printf("Changement Feu VERT_EST_OUEST suite à une demande de bus");
+        printf("Changement Feu VERT_EST_OUEST suite à une demande de bus\n");
       }
     }
     P(semaphoreVoiesSortie);
@@ -82,7 +89,7 @@ void gestionFeux(const int fileRequetesBus, const int memoireEtatFeu, const int 
     etatVoiesSortie->nombreVehiculesEst = 0;
     etatVoiesSortie->nombreVehiculesSud = 0;
     etatVoiesSortie->nombreVehiculesNord = 0;
-    printf("Capacités sortie mises à 0");
+    printf("Capacités sortie mises à 0\n");
     V(semaphoreVoiesSortie);
     V(semaphoreEtatFeux);
   }

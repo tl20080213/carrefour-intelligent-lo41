@@ -79,7 +79,10 @@ static int initialiserMemoireVoiesSortie() {
 }
 
 static void initialiserSemaphores(char *argv0, int *sem1, int *sem2) {
-  initSem(2, argv0, NULL);
+  int tab[2];
+  tab[0]=1; 
+  tab[1]=1;  
+  initSem(2, argv0, tab);
   *sem1 = 0;
   *sem2 = 1;
 }
