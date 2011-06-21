@@ -1,0 +1,16 @@
+#!/bin/bsd-csh -f
+# nettoye des IPC sur les systemes solaris
+
+foreach i (`ipcs -q |awk '{print $2}'`)
+	echo  -q $i
+	ipcrm -q $i
+end
+foreach i (`ipcs -m |awk '{print $2}'`)
+	echo -m $i
+	ipcrm -m $i
+end
+foreach i (`ipcs -s |awk '{print $2}'`)
+	echo -s $i
+	ipcrm -s $i
+end
+

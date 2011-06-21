@@ -1,5 +1,5 @@
 OBJECTS = main.o gestionFeux.o gestionDirection.o fileVehicules.o semaphore.o
-CFLAGS = -Wall -Werror -std=c89 -D_XOPEN_SOURCE=600 -ggdb
+CFLAGS = -Wall -Werror -std=c89 -D_XOPEN_SOURCE=600 -ggdb -lrt
 LDFLAGS = -lrt
 
 carrefour : $(OBJECTS)
