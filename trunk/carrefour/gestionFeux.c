@@ -36,17 +36,18 @@ void gestionFeux(const int fileRequetesBus, const int memoireEtatFeu, const int 
         P(semaphoreEtatFeux);
         if(*etatFeu==VERT_EST_OUEST) {
           *etatFeu=VERT_NORD_SUD;
-          printf("FEU NORD SUD");
+          printf("Vert au FEU NORD SUD");
         }
         else if(*etatFeu==VERT_NORD_SUD) {
           *etatFeu=VERT_EST_OUEST;
-          printf("FEU EST OUEST");
+          printf("Vert au FEU EST OUEST");
         }
         P(semaphoreVoiesSortie);
         etatVoiesSortie->nombreVehiculesOuest = 0;
         etatVoiesSortie->nombreVehiculesEst = 0;
         etatVoiesSortie->nombreVehiculesSud = 0;
         etatVoiesSortie->nombreVehiculesNord = 0;
+        printf("Capacités sortie mises à 0");
         V(semaphoreVoiesSortie);
         V(semaphoreEtatFeux);
       }
@@ -55,21 +56,25 @@ void gestionFeux(const int fileRequetesBus, const int memoireEtatFeu, const int 
     if(requete.contenantLeBus==1) {
       if(*etatFeu==VERT_EST_OUEST) {
        *etatFeu=VERT_NORD_SUD;
+       printf("Changement Feu VERT_NORD_SUD suite à une demande de bus");
       }
     }
     else if(requete.contenantLeBus==2) {
       if(*etatFeu==VERT_EST_OUEST) {
         *etatFeu=VERT_NORD_SUD;
+        printf("Changement Feu VERT_NORD_SUD suite à une demande de bus");
       }
     }
     else if(requete.contenantLeBus==4) {
       if(*etatFeu==VERT_NORD_SUD) {
         *etatFeu=VERT_EST_OUEST;
+        printf("Changement Feu VERT_EST_OUEST suite à une demande de bus");
       }
     }
     else if(requete.contenantLeBus==8) {
       if(*etatFeu==VERT_NORD_SUD) {
         *etatFeu=VERT_EST_OUEST;
+        printf("Changement Feu VERT_EST_OUEST suite à une demande de bus");
       }
     }
     P(semaphoreVoiesSortie);
@@ -77,6 +82,7 @@ void gestionFeux(const int fileRequetesBus, const int memoireEtatFeu, const int 
     etatVoiesSortie->nombreVehiculesEst = 0;
     etatVoiesSortie->nombreVehiculesSud = 0;
     etatVoiesSortie->nombreVehiculesNord = 0;
+    printf("Capacités sortie mises à 0");
     V(semaphoreVoiesSortie);
     V(semaphoreEtatFeux);
   }
