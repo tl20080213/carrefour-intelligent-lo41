@@ -17,6 +17,8 @@
 #define PROBA_SORTIE_VEHICULE 0.5
 /* La capacité des voies d'entrée. */
 #define CAPACITE_VOIE_ENTREE  20
+/* La capacité des voies de sortie. */
+#define CAPACITE_VOIE_SORTIE  20
 
 /* Retourne un nouveau véhicule avec la direction de départ et la
    direction d'arrivée donnée en argument. */
@@ -165,9 +167,84 @@ static void envoyerRequeteBus(direction dir, fileVehicules **voiesEntree,
   }
 }
 
+/* Retourne l'état des voies de sortie contenu dans la mémoire memoire. */
+static voiesSortie lireEtatVoiesSortie(int memoire) {
+  voiesSortie *etat = NULL;
+  voiesSortie resultat;
+
+  etat = shmat(memoire, NULL, 0);
+  resultat = *etat;
+  shmdt(etat);
+
+  return resultat;
+}
+
+int nombreVehiculesVoieSortie(direction dir, voiesSortie etatVoiesSortie) {
+  if (dir == NORD) {
+    return etatVoiesSortie.nombreVehiculesNord;
+  } else if (dir == SUD) {
+    return etatVoiesSortie.nombreVehiculesSud;
+  } else if (dir == EST) {
+    return etatVoiesSortie.nombreVehiculesEst;
+  } else if (dir == OUEST) {
+    return etatVoiesSortie.nombreVehiculesOuest;
+  } else {
+    fprintf(stderr, "gestionDirection.c : capaciteVoieSortie : direction invalide.");
+    exit(EXIT_FAILURE);
+  }
+}
+
+void incrementerVoieSortie(direction dir, int memoireVoiesSortie) {
+  voiesSortie *etat = NULL;
+
+  etat = shmat(memoireVoiesSortie, NULL, 0);
+  if (dir == NORD) {
+    etat->nombreVehiculesNord--;
+  } else if (dir == SUD) {
+    etat->nombreVehiculesSud--;
+  } else if (dir == EST) {
+    etat->nombreVehiculesEst--;
+  } else if (dir == OUEST) {
+    etat->nombreVehiculesOuest--;
+  } else {
+    fprintf(stderr, "gestionDirection.c : capaciteVoieSortie : direction invalide.");
+    exit(EXIT_FAILURE);
+  }
+  shmdt(etat);
+}
+
+/* Fait passer le véhicule en tête de voie par le carrefour, si
+   la voie n'est pas vide et que la voie de sortie demandée n'est
+   pas pleine. */
+void fairePasserVehicule(fileVehicules *voie,
+			 const int memoireVoiesSortie,
+			 const int semaphoreVoiesSortie) {
+  voiesSortie etatVoiesSortie;
+  vehicule vehicule;
+
+  if (estVide(*voie)) {
+    return;
+  } else {
+    vehicule = vehiculeTete(*voie);
+    P(semaphoreVoiesSortie);
+    etatVoiesSortie = lireEtatVoiesSortie(memoireVoiesSortie);
+    if (nombreVehiculesVoieSortie(vehicule.directionArrivee, etatVoiesSortie) >=
+	CAPACITE_VOIE_SORTIE) {
+      V(semaphoreVoiesSortie);
+    } else {
+      retirerVehiculeTete(voie);
+      incrementerVoieSortie(vehicule.directionArrivee, memoireVoiesSortie);
+      V(semaphoreVoiesSortie);
+    }
+  }
+}
+
 /* Fait passer les véhicules aléatoirement tant que le feu est vert. */
 void fairePasserVehicules(const direction dir,
-			  fileVehicules **voiesEntree, const int memoireVoiesSortie,
+			  fileVehicules **voiesEntree, 
+			  int nombreVoiesVoiture,
+			  int nombreVoiesBus,
+			  const int memoireVoiesSortie,
 			  const int semaphoreVoiesSortie,
 			  const int memoireEtatFeux,
 			  const int semaphoreEtatFeux) {
@@ -184,6 +261,9 @@ void fairePasserVehicules(const direction dir,
     P(semaphoreEtatFeux);
     etatFeux = lireEtatFeux(memoireEtatFeux);
     if (etatFeux == etatAttendu) {
+      int voie = rand() % (nombreVoiesVoiture + nombreVoiesBus);
+      fairePasserVehicule(voiesEntree[voie], memoireVoiesSortie,
+			  semaphoreVoiesSortie);
       V(semaphoreEtatFeux);
     } else {
       V(semaphoreEtatFeux);
@@ -217,7 +297,8 @@ void gestionDirection(const direction dir, const int *fileRequetesBus,
 		     voiesEntree);
     envoyerRequeteBus(dir, voiesEntree, nombreVoiesVoiture, nombreVoiesBus, fileRequetesBus);
     attendrePassageAuVert(dir, memoireEtatFeu, semaphoreEtatFeux, semaphoreChangementFeux);
-    fairePasserVehicules(dir, voiesEntree, memoireVoiesSortie, semaphoreVoiesSortie, 
+    fairePasserVehicules(dir, voiesEntree, nombreVoiesVoiture,
+			 nombreVoiesBus, memoireVoiesSortie, semaphoreVoiesSortie, 
 			 memoireEtatFeu, semaphoreEtatFeux);
   }
 
