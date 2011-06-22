@@ -74,7 +74,7 @@ vehicule vehiculeTete(fileVehicules file) {
   }
 }
 
-vehicule retirervehiculeTete(fileVehicules * file) {
+vehicule retirerVehiculeTete(fileVehicules * file) {
   vehicule resultat;
 
   if (file == NULL) {
@@ -86,6 +86,78 @@ vehicule retirervehiculeTete(fileVehicules * file) {
     file->capacite--;
     return resultat;
   }
+}
+
+static char *directionToString(direction dir) {
+  char *resultat;
+
+  resultat = malloc(7*sizeof(char));
+  if (dir == NORD) {
+    strcpy(resultat, "nord");
+  } else if (dir == SUD) {
+    strcpy(resultat, "sud");
+  } else if (dir == OUEST) {
+    strcpy(resultat, "ouest");
+  } else if (dir == EST) {
+    strcpy(resultat, "est");
+  }
+
+  return resultat;
+}
+
+char *vehiculeToString(vehicule v, int bus) {
+  char *resultat;
+  char *directionDepart;
+  char *directionArrivee;
+
+  resultat = malloc(50 * sizeof(char));
+  directionDepart = directionToString(v.directionDepart);
+  directionArrivee = directionToString(v.directionArrivee);
+
+  if (bus) {
+    sprintf(resultat, "Bus : { directionDepart = %s, directionArrivee = %s }", 
+	    directionDepart, directionArrivee);
+  } else {
+    sprintf(resultat, "Voiture : { directionDepart = %s, directionArrivee = %s }",
+	    directionDepart, directionArrivee);
+  }
+  free(directionDepart);
+  free(directionArrivee);
+
+  return resultat;
+}
+
+char *fileVehiculesToString(fileVehicules file, int bus) {
+  int i;
+  int taille = 0;
+  char **vehiculesStrings;
+  char *resultat;
+
+  vehiculesStrings = malloc(tailleFile(file) * sizeof(char*));
+
+  for (i = 0; i < tailleFile(file); i++) {
+    vehiculesStrings[i] = vehiculeToString(file.vehicules[i], bus);
+    taille += strlen(vehiculesStrings[i]);
+  }
+
+  resultat = malloc(taille * sizeof(char));
+  if (bus) {
+    strcpy(resultat, "File de bus : [");
+  } else {
+    strcpy(resultat,"File de voitures : [");
+  }
+
+  for (i = 0; i < tailleFile(file); i++) {
+    strcat(resultat, vehiculesStrings[i]);
+    if (i < tailleFile(file) - 1) {
+      strcat(resultat, ", ");
+    }
+    free(vehiculesStrings[i]);
+  }
+  strcat(resultat, "]");
+  free(vehiculesStrings);
+
+  return resultat;
 }
 
 #endif
