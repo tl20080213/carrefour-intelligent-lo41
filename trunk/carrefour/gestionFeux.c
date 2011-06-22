@@ -27,6 +27,7 @@ void gestionFeux(const int fileRequetesBus, const int memoireEtatFeu,
   while (1) {
     while (msgrcv(fileRequetesBus, &requete, 5, requete.type, IPC_NOWAIT)
 	   == -1) {
+	    sleep(1);
       struct timespec tempsFin;
       clock_gettime(CLOCK_REALTIME, &tempsFin);
 
@@ -39,9 +40,7 @@ void gestionFeux(const int fileRequetesBus, const int memoireEtatFeu,
       if(modulo==0) {
         if(ok==1) {
             ok=0;
-            printf("AVANT semaphore SemaphoreEtatFeu = %d \n",semaphoreEtatFeux);
             P(semaphoreEtatFeux);
-            printf("APRES semaphore SemaphoreEtatFeu = %d \n",semaphoreEtatFeux);
             if(*etatFeu==VERT_EST_OUEST) {
               *etatFeu=VERT_NORD_SUD;
               printf("Vert au FEU NORD SUD\n");
@@ -57,7 +56,6 @@ void gestionFeux(const int fileRequetesBus, const int memoireEtatFeu,
             etatVoiesSortie->nombreVehiculesEst = 0;
             etatVoiesSortie->nombreVehiculesSud = 0;
             etatVoiesSortie->nombreVehiculesNord = 0;
-            printf("Capacités sortie mises à 0\n");
             V(semaphoreVoiesSortie);
             V(semaphoreEtatFeux);
         }
@@ -99,7 +97,6 @@ void gestionFeux(const int fileRequetesBus, const int memoireEtatFeu,
     etatVoiesSortie->nombreVehiculesEst = 0;
     etatVoiesSortie->nombreVehiculesSud = 0;
     etatVoiesSortie->nombreVehiculesNord = 0;
-    printf("Capacités sortie mises à 0\n");
     V(semaphoreVoiesSortie);
     V(semaphoreEtatFeux);
   }
