@@ -1,1 +1,19 @@
 \section{Structures utilisées}
+direction enum \{Nord=1,Sud=2,Est=4,Ouest=8\}
+Cette énumération sert à lister toutes les directions possibles.
+
+struct vehicule \{
+  direction Depart
+  direction Arrivee
+\}
+Un véhicule peut être soit un bus soit une voiture. Chacun a une provenance et une destination représentés par des attributs de type direction.
+
+feu enum \{VERT\_NORD\_SUD,VERT\_EST\_OUEST\}
+Il y a 4 feux mais inutile d'avoir 4 variables car le traitement est symétrique.
+
+struct requeteBus \{
+  long type
+  direction contenantLeBus
+\}
+Cette structure est destinée à la file de message où il y a besoin d'un type et d'une direction.
+

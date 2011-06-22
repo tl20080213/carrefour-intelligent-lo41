@@ -1,3 +1,6 @@
 \begin{abstract}
 
+Dans le cadre de l'UV LO41, nous avons à réaliser une simulation réaliste de croisement routier géré par des feux. L'objectif est de faire alterner les feux à intervalle de temps régulier et de faire passer les voitures au feu vert. En plus de cela viennent se greffer les bus qui peuvent arriver à tout moment dans une voie quelconque et demander à passer.
+Les feux devront alors prioriser le bus arrivé et changer les feux si nécessaire. Nous avons pour traiter la question décidé d'utiliser des files de message, des mémoires partagées concernant la communication entre les différents processus, préférés aux threads, et des sémaphores pour protéger les variables.
+
 \end{abstract}
