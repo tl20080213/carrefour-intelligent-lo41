@@ -99,18 +99,39 @@ static void attendrePassageAuVert(direction dir, int memoireEtatFeux,
   }
 }
 
+static int directionsToTableau(direction directionsPossibles, direction *buffer) {
+  int taille = 0;
+
+  if ((NORD | directionsPossibles) == directionsPossibles) {
+    buffer[taille] = NORD;
+    (taille)++;
+  }
+  if ((SUD | directionsPossibles) == directionsPossibles) {
+    buffer[taille] = SUD;
+    (taille)++;
+  }
+  if ((EST | directionsPossibles) == directionsPossibles) {
+    buffer[taille] = EST;
+    (taille)++;
+  }
+  if ((OUEST | directionsPossibles) == directionsPossibles) {
+    buffer[taille] = OUEST;
+    (taille)++;
+  }
+
+  return taille;
+}
+
 /* Retourne une direction aléatoire parmi les directions en paramètre. */
-static direction directionAleatoire(direction dir) {
-  int exponent = 1;
-  int resultat = 0;
-
-  while (dir / exponent != 1) {
-    dir = dir /exponent;
-  }
-
-  while ((resultat | dir) != dir) {
-    resultat = 1 + rand() % exponent;
-  }
+static direction directionAleatoire(direction directionsPossibles) {
+  int numero;
+  direction directions[4];
+  int nombreDirs;
+  direction resultat;
+  
+  nombreDirs = directionsToTableau(directionsPossibles, directions);
+  numero = rand() % nombreDirs;
+  resultat = directions[numero];
 
   return resultat;
 }
@@ -126,7 +147,9 @@ static void ajouterVehicules(const direction dir,
     if (drand48() <= PROBA_ARRIVEE_VOITURE) {
       int voie = rand() % nombreVoiesVoiture;
       direction directionSortie = directionAleatoire(tableDirections[voie]);
+
       if (!estPleine(*voiesEntree[voie])) {
+	
 	ajouterVehiculeQueue(voiesEntree[voie], nouveauVehicule(dir, 
 								directionSortie));
       }
@@ -216,14 +239,14 @@ void incrementerVoieSortie(direction dir, int memoireVoiesSortie) {
 /* Fait passer le véhicule en tête de voie par le carrefour, si
    la voie n'est pas vide et que la voie de sortie demandée n'est
    pas pleine. */
-void fairePasserVehicule(fileVehicules *voie,
+int fairePasserVehicule(fileVehicules *voie,
 			 const int memoireVoiesSortie,
 			 const int semaphoreVoiesSortie) {
   voiesSortie etatVoiesSortie;
   vehicule vehicule;
 
   if (estVide(*voie)) {
-    return;
+    return 0;
   } else {
     vehicule = vehiculeTete(*voie);
     P(semaphoreVoiesSortie);
@@ -231,10 +254,12 @@ void fairePasserVehicule(fileVehicules *voie,
     if (nombreVehiculesVoieSortie(vehicule.directionArrivee, etatVoiesSortie) >=
 	CAPACITE_VOIE_SORTIE) {
       V(semaphoreVoiesSortie);
+      return 0;
     } else {
       retirerVehiculeTete(voie);
       incrementerVoieSortie(vehicule.directionArrivee, memoireVoiesSortie);
       V(semaphoreVoiesSortie);
+      return 1;
     }
   }
 }
@@ -250,6 +275,8 @@ void fairePasserVehicules(const direction dir,
 			  const int semaphoreEtatFeux) {
   feu etatFeux;
   feu etatAttendu;
+  char directionDepart[6];
+  char directionArrivee[6];
 
   if (dir == OUEST || dir == EST) {
     etatAttendu = VERT_NORD_SUD;
@@ -262,13 +289,37 @@ void fairePasserVehicules(const direction dir,
     etatFeux = lireEtatFeux(memoireEtatFeux);
     if (etatFeux == etatAttendu) {
       int voie = rand() % (nombreVoiesVoiture + nombreVoiesBus);
-      fairePasserVehicule(voiesEntree[voie], memoireVoiesSortie,
-			  semaphoreVoiesSortie);
+      directionToString(vehiculeTete(*(voiesEntree[voie])).directionDepart, directionDepart);
+      directionToString(vehiculeTete(*(voiesEntree[voie])).directionArrivee, directionArrivee);
+
+      if (fairePasserVehicule(voiesEntree[voie], memoireVoiesSortie,
+			      semaphoreVoiesSortie)) {
+	printf("Passage du vehicule en tête de la voie numero %d de la direction %s dans la voie de sortie direction %s.\n", voie, directionDepart, directionArrivee);
+      }
       V(semaphoreEtatFeux);
     } else {
       V(semaphoreEtatFeux);
       break;
     }
+  }
+}
+
+static void afficherVoiesAvecMessage(char *message, direction dir, fileVehicules **voiesEntree,
+				     int nombreVoiesVoiture, int nombreVoiesBus) {
+  int i;
+  char affichageVoie[2000];
+  char direction[6];
+
+  directionToString(dir, direction);
+  printf("%s : etat des voies direction %s en entree :\n", message, direction);
+  for (i = 0; i < nombreVoiesVoiture; i++) {
+    fileVehiculesToString(*(voiesEntree[i]), 0, affichageVoie);
+    printf("Voie numero %d : %s\n", i, affichageVoie);
+  }
+
+   for (i = nombreVoiesVoiture; i < nombreVoiesVoiture + nombreVoiesBus - 1; i++) {
+    fileVehiculesToString(*(voiesEntree[i]), 1, affichageVoie);
+    printf("Voie numero %d : %s\n", i, affichageVoie);
   }
 }
 
@@ -295,11 +346,17 @@ void gestionDirection(const direction dir, const int *fileRequetesBus,
   while (1) {
     ajouterVehicules(dir, tableDirections, nombreVoiesVoiture, nombreVoiesBus,
 		     voiesEntree);
+    afficherVoiesAvecMessage("Après ajout des véhicules", dir, voiesEntree, nombreVoiesVoiture,
+			     nombreVoiesBus);
     envoyerRequeteBus(dir, voiesEntree, nombreVoiesVoiture, nombreVoiesBus, fileRequetesBus);
+    afficherVoiesAvecMessage("Attente de passage au vert", dir, voiesEntree, nombreVoiesVoiture,
+			     nombreVoiesBus);
     attendrePassageAuVert(dir, memoireEtatFeu, semaphoreEtatFeux, semaphoreChangementFeux);
     fairePasserVehicules(dir, voiesEntree, nombreVoiesVoiture,
 			 nombreVoiesBus, memoireVoiesSortie, semaphoreVoiesSortie, 
 			 memoireEtatFeu, semaphoreEtatFeux);
+    afficherVoiesAvecMessage("Apres avoir fait passer les vehicules", dir, voiesEntree, 
+			     nombreVoiesVoiture, nombreVoiesBus);
   }
 
   libererVoiesEntree(voiesEntree, nombreVoiesVoiture + nombreVoiesBus);

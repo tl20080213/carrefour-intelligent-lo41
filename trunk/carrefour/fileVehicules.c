@@ -88,10 +88,7 @@ vehicule retirerVehiculeTete(fileVehicules * file) {
   }
 }
 
-static char *directionToString(direction dir) {
-  char *resultat;
-
-  resultat = malloc(7*sizeof(char));
+char *directionToString(direction dir, char *resultat) {
   if (dir == NORD) {
     strcpy(resultat, "nord");
   } else if (dir == SUD) {
@@ -105,42 +102,28 @@ static char *directionToString(direction dir) {
   return resultat;
 }
 
-char *vehiculeToString(vehicule v, int bus) {
-  char *resultat;
-  char *directionDepart;
-  char *directionArrivee;
+char *vehiculeToString(vehicule v, int bus, char *resultat) {
+  char directionDepart[6];
+  char directionArrivee[6];
 
-  resultat = malloc(50 * sizeof(char));
-  directionDepart = directionToString(v.directionDepart);
-  directionArrivee = directionToString(v.directionArrivee);
+  directionToString(v.directionDepart, directionDepart);
+  directionToString(v.directionArrivee, directionArrivee);
 
   if (bus) {
-    sprintf(resultat, "Bus : { directionDepart = %s, directionArrivee = %s }", 
+    sprintf(resultat, "Bus : %s -> %s", 
 	    directionDepart, directionArrivee);
   } else {
-    sprintf(resultat, "Voiture : { directionDepart = %s, directionArrivee = %s }",
+    sprintf(resultat, "Voiture : %s -> %s",
 	    directionDepart, directionArrivee);
   }
-  free(directionDepart);
-  free(directionArrivee);
 
   return resultat;
 }
 
-char *fileVehiculesToString(fileVehicules file, int bus) {
+char *fileVehiculesToString(fileVehicules file, int bus, char *resultat) {
   int i;
-  int taille = 0;
-  char **vehiculesStrings;
-  char *resultat;
+  char vehicule[100];
 
-  vehiculesStrings = malloc(tailleFile(file) * sizeof(char*));
-
-  for (i = 0; i < tailleFile(file); i++) {
-    vehiculesStrings[i] = vehiculeToString(file.vehicules[i], bus);
-    taille += strlen(vehiculesStrings[i]);
-  }
-
-  resultat = malloc(taille * sizeof(char));
   if (bus) {
     strcpy(resultat, "File de bus : [");
   } else {
@@ -148,14 +131,12 @@ char *fileVehiculesToString(fileVehicules file, int bus) {
   }
 
   for (i = 0; i < tailleFile(file); i++) {
-    strcat(resultat, vehiculesStrings[i]);
+    strcat(resultat, vehiculeToString(file.vehicules[i], bus, vehicule));
     if (i < tailleFile(file) - 1) {
       strcat(resultat, ", ");
     }
-    free(vehiculesStrings[i]);
   }
   strcat(resultat, "]");
-  free(vehiculesStrings);
 
   return resultat;
 }

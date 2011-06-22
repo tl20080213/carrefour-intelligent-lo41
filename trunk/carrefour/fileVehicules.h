@@ -47,14 +47,18 @@ vehicule vehiculeTete(fileVehicules file);
                  la fonction donne un message d'erreur et lance exit(EXIT_FAILURE). */
 vehicule retirerVehiculeTete(fileVehicules * file);
 
+/* Donne une chaîne de caractère décrivant la direction dir. La chaîne est allouée avec
+   malloc, et doit par conséquent être libérée avec free. */
+char *directionToString(direction dir, char *resultat);
+
 /* Donne une chaîne de caractères décrivant la file de véhicules file, bus indique si
    la file est une file réservée aux bus. La chaîne de caractère est allouée avec malloc,
    et doit par conséquent être libérée avec free. */
-char *fileVehiculesToString(fileVehicules file, int bus);
+char *fileVehiculesToString(fileVehicules file, int bus, char *resultat);
 
 /* Donne une chaîne de caractères représentant le véhicule v, bus indique s'il s'agit. 
    La chaîne de caractère est allouée avec malloc, et doit par conséquent être libérée avec
    free. */
-char *vehiculeToString(vehicule v, int bus);
+char *vehiculeToString(vehicule v, int bus, char *resultat);
 
 #endif
